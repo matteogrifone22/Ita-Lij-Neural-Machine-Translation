@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+.venv/
+venv/
+env/
+*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Dataset (file pesanti)
+dataset/**/*.csv
+dataset/**/*.txt
+dataset/**/*.json
+dataset/**/*.tsv
+dataset/Ita/*.csv
+dataset/Ita/*.txt
+dataset/Lij/*.csv
+dataset/Lij/*.txt
+!dataset/.gitkeep
+
+# Modelli (binari pesanti)
+model/**/*.pt
+model/**/*.pkl
+model/**/*.pth
+model/**/*.bin
+model/**/*.safetensors
+!model/.gitkeep
+
+# Preprocessing (output)
+preprocessing/**/*.pkl
+preprocessing/**/*.json
+!preprocessing/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs e cache
+*.log
+.cache/
+*.tmp
+
+# Environment variables
+.env
+.env.local
+
+# OS
+Thumbs.db
+.DS_Store
