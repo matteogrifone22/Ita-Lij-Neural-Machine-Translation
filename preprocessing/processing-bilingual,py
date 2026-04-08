@@ -1,0 +1,66 @@
+import json
+import os
+import random
+
+def clean_and_split_json(input_file, output_folder='preprocessed_data'):
+    if not os.path.exists(input_file):
+        print(f"[ERRORE] Il file {input_file} non esiste.")
+        return
+
+    # 1. Caricamento dati originali
+    with open(input_file, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    # 2. Ricostruzione coppie (x, y) e de-duplicazione
+    # Usiamo un set per le coppie uniche (testo_ita, testo_lij)
+    seen_pairs = set()
+    unique_pairs = []
+    
+    # Estraiamo gli indici numerici presenti nel file
+    indices = sorted(list(set([k.split('_')[1] for k in data.keys() if '_' in k])), key=int)
+    
+    for idx in indices:
+        ita = data.get(f"x_{idx}")
+        lij = data.get(f"y_{idx}")
+        
+        if ita and lij:
+            # Pulizia minima (strip e lower per il controllo duplicati)
+            pair_key = (ita.strip().lower(), lij.strip().lower())
+            
+            if pair_key not in seen_pairs:
+                seen_pairs.add(pair_key)
+                unique_pairs.append((ita.strip(), lij.strip()))
+
+    print(f"Coppie totali caricate: {len(indices)}")
+    print(f"Coppie uniche trovate: {len(unique_pairs)}")
+    print(f"Duplicati rimossi: {len(indices) - len(unique_pairs)}")
+
+    # 3. Shuffle (Fondamentale per un BLEU onesto)
+    random.seed(42) # Fissiamo il seed per avere split riproducibili
+    random.shuffle(unique_pairs)
+
+    # 4. Calcolo degli indici di split (80% Train, 10% Val, 10% Test)
+    total = len(unique_pairs)
+    train_end = int(total * 0.8)
+    val_end = int(total * 0.9)
+
+    def save_json(pairs, filename):
+        formatted = {}
+        for i, (x, y) in enumerate(pairs):
+            formatted[f"x_{i}"] = x
+            formatted[f"y_{i}"] = y
+        
+        path = os.path.join(output_folder, filename)
+        with open(path, 'w', encoding='utf-8') as f:
+            json.dump(formatted, f, ensure_ascii=False, indent=2)
+        print(f"Salvato: {path} ({len(pairs)} coppie)")
+
+    # 5. Salvataggio split
+    os.makedirs(output_folder, exist_ok=True)
+    save_json(unique_pairs[:train_end], 'train_dict.json')
+    save_json(unique_pairs[train_end:val_end], 'val_dict.json')
+    save_json(unique_pairs[val_end:], 'test_dict.json')
+
+# --- ESECUZIONE ---
+input_path = 'preprocessed_data/data_dict.json'
+clean_and_split_json(input_path)

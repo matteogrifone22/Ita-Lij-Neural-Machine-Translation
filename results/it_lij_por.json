@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-04-04 01:38:00",
+  "direction": "it_lij",
+  "input_file": "preprocessed_data/test_dict.json",
+  "num_sentences": 2923,
+  "bleu": 38.2,
+  "spbleu": 46.91,
+  "chrf": 62.23
+}
